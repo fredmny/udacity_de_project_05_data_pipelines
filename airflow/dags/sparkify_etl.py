@@ -12,6 +12,10 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'fred.waldow',
     'start_date': datetime(2019, 1, 12),
+    'retries': 3,
+    'retry_delay': timedelta(minutes=5),
+    'email_on_retry': False,
+    'catchup_by_default': False
 }
 
 dag = DAG('sparkify_etl',
@@ -24,7 +28,8 @@ start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
-    dag=dag
+    dag=dag,
+    
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
