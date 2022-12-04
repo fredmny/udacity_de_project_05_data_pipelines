@@ -54,3 +54,5 @@ class StageToRedshiftOperator(BaseOperator):
             credentials.secret_key,
             self.json_format
         )
+        redshift.run(formatted_sql)
+        self.log.info(f'Successfully loadet data into {self.table}')
