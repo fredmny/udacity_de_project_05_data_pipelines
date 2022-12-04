@@ -1,3 +1,5 @@
+# Based on the bitnami docks and example compose file found under:
+# https://hub.docker.com/r/bitnami/airflow
 version: '2'
 
 services:
