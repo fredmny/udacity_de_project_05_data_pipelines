@@ -5,6 +5,8 @@ from airflow.operators.dummy_operator import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                                 LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
+
+sql_queries = SqlQueries()
  
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
@@ -33,7 +35,8 @@ stage_events_to_redshift = StageToRedshiftOperator(
     redshift_conn_id='redshift_connection',
     aws_credentials_id='aws_credentials',
     s3_bucket='udacity_dend',
-    s3_key='log_data/{execution_date.year}/{execution_date.month}'
+    s3_key='log_data/{execution_date.year}/{execution_date.month}',
+    provide_context=True
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
@@ -44,12 +47,16 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     aws_credentials_id='aws_credentials',
     s3_bucket='udacity_dend',
     s3_key='song_data',
-    json_format='s3://udacity-dend/log_json_path.json'
+    json_format='s3://udacity-dend/log_json_path.json',
+    provide_context=True
 )
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
-    dag=dag
+    dag=dag,
+    table='sonplays',
+    redshift_conn_id='redshift_connection',
+    sql_query = sql_queries.songplay_table_insert
 )
 
 load_user_dimension_table = LoadDimensionOperator(
