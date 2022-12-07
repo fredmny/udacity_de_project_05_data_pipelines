@@ -24,9 +24,9 @@ class LoadFactOperator(BaseOperator):
         
         self.log.info('Loading data into fact table')
         rendered_sql = self.sql_query.format(**context)
-        slq_final = f'''
+        final_sql = f'''
             INSERT INTO {self.table} (
                 {rendered_sql}
             )
         '''
-        redshift.run(slq_final)
+        redshift.run(final_sql)
