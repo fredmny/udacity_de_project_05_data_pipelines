@@ -1,3 +1,4 @@
+import logging
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
@@ -23,7 +24,7 @@ class LoadFactOperator(BaseOperator):
     def execute(self, context):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
-        self.log.info(f'Loading data into {self.table} fact table')
+        logging.info(f'Loading data into {self.table} fact table')
         rendered_sql = self.sql_query.format(**context)
         final_sql = f'''
             INSERT INTO {self.table} (
@@ -31,5 +32,5 @@ class LoadFactOperator(BaseOperator):
             )
         '''
         redshift.run(final_sql)
-        self.log.info(f'Successfully loaded data into \
+        logging.info(f'Successfully loaded data into \
             {self.table} fact table')

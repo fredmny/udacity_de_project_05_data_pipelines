@@ -1,3 +1,4 @@
+import logging
 from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
@@ -40,10 +41,10 @@ class StageToRedshiftOperator(BaseOperator):
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
-        self.log.info(f'Clearing data from {self.table}')
+        logging.info(f'Clearing data from {self.table}')
         redshift.run(f'DELETE FROM {self.table}')
 
-        self.log.info(f'Staging table {self.table} \
+        logging.info(f'Staging table {self.table} \
             from files in {self.s3_bucket}')
         rendered_key = self.s3_key.format(**context)
         s3_path = 's3://{}/{}'.format(self.s3_bucket, rendered_key)
@@ -55,4 +56,4 @@ class StageToRedshiftOperator(BaseOperator):
             self.json_format
         )
         redshift.run(formatted_sql)
-        self.log.info(f'Successfully loadet data into {self.table}')
+        logging.info(f'Successfully loadet data into {self.table}')

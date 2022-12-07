@@ -93,7 +93,17 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift_connection',
+    tables_with_pk = {
+        'staging_events': 1, # table has no primary key
+        'staging_songs': 1, # table has no primary key
+        'songplays': 'songplay_id',
+        'users': 'userid',
+        'songs': 'song_id',
+        'artists': 'artist_id',
+        'time': 1 # table has no primary key
+    }
 )
 
 end_operator = DummyOperator(task_id='Stop_execution', dag=dag)
