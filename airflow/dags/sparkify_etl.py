@@ -35,8 +35,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     redshift_conn_id='redshift_connection',
     aws_credentials_id='aws_credentials',
     s3_bucket='udacity_dend',
-    s3_key='log_data/{execution_date.year}/{execution_date.month}',
-    provide_context=True
+    s3_key='log_data/{execution_date.year}/{execution_date.month}'
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
@@ -48,7 +47,6 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     s3_bucket='udacity_dend',
     s3_key='song_data',
     json_format='s3://udacity-dend/log_json_path.json',
-    provide_context=True
 )
 
 load_songplays_table = LoadFactOperator(
@@ -56,7 +54,7 @@ load_songplays_table = LoadFactOperator(
     dag=dag,
     table='songplays',
     redshift_conn_id='redshift_connection',
-    sql_query=sql_queries.songplay_table_insert
+    sql_query=sql_queries.songplay_table_insert,
 )
 
 load_user_dimension_table = LoadDimensionOperator(

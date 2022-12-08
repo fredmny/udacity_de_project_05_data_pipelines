@@ -24,7 +24,7 @@ class LoadDimensionOperator(BaseOperator):
     def execute(self, context):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
-        if self.append = False:
+        if self.append == False:
             logging.info(f'Deleting data from {self.table} table')
             redshift.run(f'DELETE FOM {self.table}')
         
