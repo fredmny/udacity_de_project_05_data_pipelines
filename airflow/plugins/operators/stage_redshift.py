@@ -37,15 +37,17 @@ class StageToRedshiftOperator(BaseOperator):
         self.json_format = json_format
         
     def execute(self, context):
+        logging.info(f'Getting AWS credentials')
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(self.redshift_conn_id)
         
         logging.info(f'Clearing data from {self.table}')
         redshift.run(f'DELETE FROM {self.table}')
-
+        logging.info(f'Successfully deleted existing data in {self.table}')
+        
         logging.info(f'Staging table {self.table} \
-            from files in {self.s3_bucket}')
+            through COPY from files in {self.s3_bucket}')
         rendered_key = self.s3_key.format(**context)
         s3_path = 's3://{}/{}'.format(self.s3_bucket, rendered_key)
         formatted_sql = StageToRedshiftOperator.sql_query.format(
