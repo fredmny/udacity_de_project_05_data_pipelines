@@ -13,11 +13,12 @@ sql_queries = SqlQueries()
 
 default_args = {
     'owner': 'fred.waldow',
-    'start_date': datetime(2019, 1, 12),
+    'depends_on_past': False,
+    'start_date': datetime(2018, 11, 2),
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
-    'catchup_by_default': False
+    'catchup_by_default': False 
 }
 
 dag = DAG('sparkify_etl',
@@ -32,28 +33,28 @@ stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
     table='staging_events',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
-    s3_bucket='udacity_dend',
-    s3_key='log_data/{execution_date.year}/{execution_date.month}'
+    s3_bucket='udacity-dend',
+    s3_key='log_data/{execution_date.year}/{execution_date.month}',
+    json_format='s3://udacity-dend/log_json_path.json'
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
     dag=dag,
     table='staging_songs',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
-    s3_bucket='udacity_dend',
-    s3_key='song_data',
-    json_format='s3://udacity-dend/log_json_path.json',
+    s3_bucket='udacity-dend',
+    s3_key='song_data/A/B'
 )
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
     dag=dag,
     table='songplays',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     sql_query=sql_queries.songplay_table_insert,
 )
 
@@ -61,7 +62,7 @@ load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
     dag=dag,
     table='users',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     sql_query=sql_queries.user_table_insert
 )
 
@@ -69,7 +70,7 @@ load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
     dag=dag,
     table='songs',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     sql_query=sql_queries.song_table_insert
 )
 
@@ -77,7 +78,7 @@ load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
     dag=dag,
     table='artists',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     sql_query=sql_queries.artist_table_insert
 )
 
@@ -85,14 +86,14 @@ load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
     dag=dag,
     table='time',
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     sql_query=sql_queries.time_table_insert
 )
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     dag=dag,
-    redshift_conn_id='redshift_connection',
+    redshift_conn_id='redshift',
     tables_with_pk = {
         'staging_events': 1, # table has no primary key
         'staging_songs': 1, # table has no primary key

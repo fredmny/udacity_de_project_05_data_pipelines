@@ -26,7 +26,7 @@ class LoadDimensionOperator(BaseOperator):
         
         if self.append == False:
             logging.info(f'Deleting data from {self.table} table')
-            redshift.run(f'DELETE FOM {self.table}')
+            redshift.run(f'DELETE FROM {self.table}')
         
         logging.info(f'Loading data into {self.table} dimension table')
         final_sql = f'''

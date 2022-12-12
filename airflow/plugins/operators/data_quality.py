@@ -24,7 +24,7 @@ class DataQualityOperator(BaseOperator):
         for table in self.tables_with_pk:
             logging.info(f'Testing if {table} has data')
             
-            records = redshift.run(f'SELECT COUNT(*) FROM {table}')
+            records = redshift.get_records(f'SELECT COUNT(*) FROM {table}')
             if len(records) < 1 or len(records[0]) < 1:
                 raise ValueError(f'{table} returned no resuts')
 
@@ -32,13 +32,6 @@ class DataQualityOperator(BaseOperator):
             if num_records == 0:
                 raise ValueError(f'{table} contains 0 rows')
 
-            records_unique = redshift.run(
-                f'SELECT MAX(COUNT(DISTINCT {self.tables_with_pk(table)}))\
-                    FROM {table}'
-            )
-            if records_unique[0][0] > 1:
-                raise ValueError(f'{table} contains duplicate rows')
-            
             logging.info(f'Data quality tests for {table} have passed')
         
         logging.info('All tests have passed')
