@@ -47,7 +47,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
     s3_bucket='udacity-dend',
-    s3_key='song_data/A/B'
+    s3_key='song_data'
 )
 
 load_songplays_table = LoadFactOperator(
