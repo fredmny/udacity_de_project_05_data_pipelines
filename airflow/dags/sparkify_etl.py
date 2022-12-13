@@ -94,6 +94,29 @@ run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     dag=dag,
     redshift_conn_id='redshift',
+    dq_checks = [
+        {'test_query': 'SELECT COUNT(*) FROM staging_events',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM staging_songs',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM songplays',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM users',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM songs',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM artists',
+            'operator': 'greater_than',
+            'value': 0 },
+        {'test_query': 'SELECT COUNT(*) FROM time',
+            'operator': 'greater_than',
+            'value': 0 }
+    ]
     tables_with_pk = {
         'staging_events': 1, # table has no primary key
         'staging_songs': 1, # table has no primary key
